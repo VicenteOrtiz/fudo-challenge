@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'bloc/login_bloc.dart';
+import 'package:fudo_challenge/app/presentation/app_theme.dart';
+import '../bloc/login_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -16,12 +17,13 @@ class LoginPage extends StatelessWidget {
       body: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            // TODO: Navigate to the next screen
-            ScaffoldMessenger.of(context).showSnackBar(
+            // Navigate to the next screen
+            /* ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Login Success"),
               ),
-            );
+            ); */
+            Navigator.of(context).pushReplacementNamed('/posts');
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error)),
@@ -83,7 +85,7 @@ class LoginPage extends StatelessWidget {
                               );
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 236, 94, 55),
+                        backgroundColor: ColorPrimary.primaryColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(

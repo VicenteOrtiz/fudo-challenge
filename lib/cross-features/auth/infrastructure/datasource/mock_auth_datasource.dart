@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'auth_datasource.dart';
 
 class MockAuthDataSource implements AuthDataSource {

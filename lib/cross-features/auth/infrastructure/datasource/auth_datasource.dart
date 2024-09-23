@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fudo_challenge/secrets.dart';
 
 abstract class AuthDataSource {
   Future<String> login(String email, String password);
@@ -12,7 +13,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   @override
   Future<String> login(String email, String password) async {
     try {
-      final response = await _dio.post('/login', data: {
+      final response = await _dio.post('$baseUrl/login', data: {
         'email': email,
         'password': password,
       });
