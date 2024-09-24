@@ -25,4 +25,8 @@ class PostsRepository {
       }
     }
   }
+
+  Future<Post> addPost(Post post) async {
+    return await dataSource.addPost(post);
+  }
 }

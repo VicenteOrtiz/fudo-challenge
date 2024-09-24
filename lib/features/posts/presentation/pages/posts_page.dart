@@ -5,6 +5,7 @@ import 'package:fudo_challenge/features/posts/presentation/widgets/post_list_wid
 import 'package:fudo_challenge/features/posts/presentation/widgets/search_bar_widget.dart';
 import '../../../../core/config/shared_preferences/app_preferences.dart';
 import '../bloc/posts_bloc.dart';
+import 'add_post_page.dart';
 
 class PostsPage extends StatefulWidget {
   @override
@@ -81,6 +82,18 @@ class _PostsPageState extends State<PostsPage> {
           }
           return const Center(child: Text('No posts available'));
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: ColorPrimary.primaryColor,
+        onPressed: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => AddPostPage()),
+          );
+          if (result != null) {
+            context.read<PostsBloc>().add(AddPost(result));
+          }
+        },
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }

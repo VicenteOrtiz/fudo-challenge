@@ -6,6 +6,7 @@ abstract class PostsDataSource {
   Future<List<Post>> getPosts();
   Future<void> cachePosts(List<Post> posts);
   Future<List<Post>> getCachedPosts();
+  Future<Post> addPost(Post post);
 }
 
 class PostsDataSourceImpl implements PostsDataSource {
@@ -13,6 +14,23 @@ class PostsDataSourceImpl implements PostsDataSource {
   final DatabaseHelper _dbHelper;
 
   PostsDataSourceImpl(this._dio) : _dbHelper = DatabaseHelper.instance;
+
+  @override
+  Future<Post> addPost(Post post) async {
+    try {
+      final response = await _dio.post(
+        'https://jsonplaceholder.typicode.com/posts',
+        data: post.toJson(),
+      );
+      if (response.statusCode == 201) {
+        return Post.fromJson(response.data);
+      } else {
+        throw Exception('${response.statusCode}: Failed to add post');
+      }
+    } catch (e) {
+      throw Exception('Failed to add post');
+    }
+  }
 
   @override
   Future<List<Post>> getPosts() async {

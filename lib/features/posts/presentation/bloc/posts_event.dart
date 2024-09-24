@@ -10,3 +10,9 @@ class SearchPosts extends PostsEvent {
 
   SearchPosts(this.query);
 }
+
+class AddPost extends PostsEvent {
+  final Post post;
+
+  AddPost(this.post);
+}

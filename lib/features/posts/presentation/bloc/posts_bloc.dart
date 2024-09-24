@@ -15,6 +15,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   PostsBloc({required this.repository}) : super(PostsInitial()) {
     on<LoadPosts>(_onLoadPosts);
     on<SearchPosts>(_onSearchPosts);
+    on<AddPost>(_onAddPost);
   }
 
   Future<void> _onLoadPosts(LoadPosts event, Emitter<PostsState> emit) async {
@@ -56,5 +57,18 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       return userName.contains(query.toLowerCase()) ||
           post.title.toLowerCase().contains(query.toLowerCase());
     }).toList();
+  }
+
+  Future<void> _onAddPost(AddPost event, Emitter<PostsState> emit) async {
+    final currentState = state;
+    if (currentState is PostsLoaded) {
+      try {
+        final newPost = await repository.addPost(event.post);
+        final updatedPosts = List<Post>.from(currentState.posts)..add(newPost);
+        emit(PostsLoaded(updatedPosts));
+      } catch (e) {
+        emit(PostsError('Failed to add post: ${e.toString()}'));
+      }
+    }
   }
 }
