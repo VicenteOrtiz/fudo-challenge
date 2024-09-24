@@ -12,6 +12,7 @@ import 'features/posts/presentation/bloc/posts_bloc.dart';
 
 void main() {
   //final AuthDataSource authDataSource = AuthDataSourceImpl(Dio());
+  WidgetsFlutterBinding.ensureInitialized();
   final AuthDataSource authDataSource = MockAuthDataSource();
   final AuthRepository authRepository = AuthRepository(authDataSource);
 

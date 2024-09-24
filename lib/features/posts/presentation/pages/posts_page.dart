@@ -1,99 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fudo_challenge/app/presentation/app_theme.dart';
+import 'package:fudo_challenge/features/posts/presentation/widgets/post_list_widget.dart';
+import 'package:fudo_challenge/features/posts/presentation/widgets/search_bar_widget.dart';
 import '../bloc/posts_bloc.dart';
 
-class PostsPage extends StatelessWidget {
-  const PostsPage({super.key});
+class PostsPage extends StatefulWidget {
+  @override
+  _PostsPageState createState() => _PostsPageState();
+}
+
+class _PostsPageState extends State<PostsPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load posts when the screen is initialized
+    BlocProvider.of<PostsBloc>(context).add(LoadPosts());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: ColorPrimary.primaryColor,
         title: const Text(
           'Posts',
           style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.refresh,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            context.read<PostsBloc>().add(LoadPosts());
+          },
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.exit_to_app, color: Colors.white),
+            icon: const Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
             onPressed: () {
-              // TODO: Implement logout functionality
+              // Implement logout functionality
               Navigator.of(context).pushReplacementNamed('/');
             },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _SearchBar(),
-          Expanded(child: _PostsList()),
-        ],
-      ),
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'Search by user name or post title...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.grey[200],
-        ),
-        onChanged: (query) {
-          context.read<PostsBloc>().add(SearchPosts(query));
+      body: BlocConsumer<PostsBloc, PostsState>(
+        listener: (context, state) {
+          if (state is PostsLoaded &&
+              state.isFromCache &&
+              state.message != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message!),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is PostsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is PostsLoaded) {
+            return Column(
+              children: [
+                const SearchBarWidget(),
+                Expanded(child: PostListWidget()),
+              ],
+            );
+          } else if (state is PostsError) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+          return const Center(child: Text('No posts available'));
         },
       ),
-    );
-  }
-}
-
-class _PostsList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<PostsBloc, PostsState>(
-      builder: (context, state) {
-        if (state is PostsInitial) {
-          context.read<PostsBloc>().add(LoadPosts());
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is PostsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is PostsLoaded) {
-          return state.posts.isEmpty
-              ? const Center(child: Text('No posts found'))
-              : ListView.builder(
-                  itemCount: state.posts.length,
-                  itemBuilder: (context, index) {
-                    final post = state.posts[index];
-                    return ListTile(
-                      title: Text(post.title),
-                      subtitle: Text(post.body),
-                      leading: CircleAvatar(
-                        backgroundColor: ColorPrimary.primaryColor,
-                        child: Text(
-                          post.userId.toString(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    );
-                  },
-                );
-        } else if (state is PostsError) {
-          return Center(child: Text('Error: ${state.message}'));
-        }
-        return Container();
-      },
     );
   }
 }

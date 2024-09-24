@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/post.dart';
+import '../../infrastructure/models/response_model.dart';
 import '../../infrastructure/posts_repository.dart';
 
 part 'posts_event.dart';
@@ -19,8 +20,13 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   Future<void> _onLoadPosts(LoadPosts event, Emitter<PostsState> emit) async {
     emit(PostsLoading());
     try {
-      _allPosts = await repository.getPosts();
-      emit(PostsLoaded(_allPosts));
+      final ResponseModel<List<Post>> response = await repository.getPosts();
+      _allPosts = response.data;
+      emit(PostsLoaded(
+        _allPosts,
+        isFromCache: response.isFromCache,
+        message: response.message,
+      ));
     } catch (e) {
       emit(PostsError(e.toString()));
     }

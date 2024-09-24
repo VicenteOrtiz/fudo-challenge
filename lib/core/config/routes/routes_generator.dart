@@ -9,7 +9,7 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => LoginPage());
       case '/posts':
-        return MaterialPageRoute(builder: (_) => const PostsPage());
+        return MaterialPageRoute(builder: (_) => PostsPage());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
