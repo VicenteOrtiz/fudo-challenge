@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fudo_challenge/app/presentation/app_theme.dart';
 import 'package:fudo_challenge/features/posts/presentation/widgets/post_list_widget.dart';
 import 'package:fudo_challenge/features/posts/presentation/widgets/search_bar_widget.dart';
+import '../../../../core/config/shared_preferences/app_preferences.dart';
 import '../bloc/posts_bloc.dart';
 
 class PostsPage extends StatefulWidget {
@@ -45,7 +46,9 @@ class _PostsPageState extends State<PostsPage> {
             ),
             onPressed: () {
               // Implement logout functionality
-              Navigator.of(context).pushReplacementNamed('/');
+              final appPreferences = AppPreferences();
+              appPreferences.isAuthenticated = false;
+              Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
         ],
